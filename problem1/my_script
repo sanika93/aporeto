@@ -1,0 +1,157 @@
+#! /bin/bash
+# My first script
+
+usage(){
+
+cat << EOF
+usage: $0 options
+
+OPTIONS:
+-h Show this message
+--create-file name of the file
+--no-prompt Disable prompt from user
+--verbose Std out statements
+
+EOF
+}
+
+StatesArray=(
+Alabama
+Alaska
+Arizona
+Arkansas
+California
+Colorado
+Connecticut
+Delaware
+Florida
+Georgia
+Hawaii
+Idaho
+Illinois
+Indiana
+Iowa
+Kansas
+Kentucky
+Louisiana
+Maine
+Maryland
+Massachusetts
+Michigan
+Minnesota
+Mississippi
+Missouri
+Montana
+Nebraska
+Nevada
+'New Hampshire'
+'New Jersey'
+'New Mexico'
+'New York'
+'North Carolina'
+'North Dakota'
+Ohio
+Oklahoma
+Oregon
+Pennsylvania
+'Rhode Island'
+'South Carolina'
+'South Dakota'
+Tennessee
+Texas
+Utah
+Vermont
+Virginia
+Washington
+'West Virginia'
+Wisconsin
+Wyoming)
+
+
+checkForPrompt="YES"
+checkForVerbose=""
+noOfArgs=$#
+document=${1#*=}
+
+if [[ $# -eq 0 ]];then
+usage
+exit 1
+fi
+
+myString="$1"
+subString="--create-file"
+flag=
+
+if [[ "$myString" != *"$subString"* ]]; then 
+usage
+exit 1
+fi
+
+declare -A array
+for constant in --no-prompt --verbose
+do
+	array[$constant]=1
+done
+
+for f in "$@";
+do
+	if [[ "$f" == "$1" ]];then
+	continue
+	fi
+	if [[ ! -z "$f" ]];then
+	if [[ ! ${array[$f]} ]];then
+	usage
+	exit 1
+	fi
+	fi
+	case $f in
+		"--no-prompt")
+		  	checkForPrompt="NO"
+			;;
+		"--verbose")
+			checkForVerbose="YES"
+			;;
+		"--help")
+			usage
+			exit 0;;
+		 "-h")
+			usage
+			exit 0;;
+	esac
+done
+
+if [[ $document != "" ]];then
+		if [ -f "$document" ];
+		then
+			if [[ $checkForVerbose == "YES" ]];then
+			echo "File already exists"
+			fi
+			if [[ $checkForPrompt == "NO" ]];then
+			printf "%s\n" "${StatesArray[@]}" >> $document
+			elif [[ $checkForPrompt == "YES" ]];then
+			while true
+			do
+			read -p "File exists. Overwrite (y/n) ?" choice
+			case "$choice" in 
+				y) printf "%s\n" "${StatesArray[@]}" > $document
+				   break
+				   ;;
+				n)
+				   break
+				   ;;
+			esac
+			done
+			fi
+		else
+	
+			printf "%s\n" "${StatesArray[@]}" >> $document
+			if [[ $checkForVerbose == "YES" ]];then
+			echo "File created"
+			fi
+	
+		fi
+else
+usage
+echo "Please enter the filename"
+exit 1
+fi

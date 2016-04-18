@@ -1,0 +1,38 @@
+#!/bin/bash
+
+usage(){
+
+cat << EOF
+usage: $0 options
+format : --file=<filename> --output=<outputfilename> [-verbose]
+OPTIONS:
+-h Show this message
+--file name of the input file
+--output name of the output file
+--verbose Std out statements
+
+EOF
+}
+
+inputName="$1"
+if [[ $inputName == "--help" || $inputName == "-h" ]];then
+usage
+exit 1
+fi
+
+
+filename=${1#*=}
+
+output="$2"
+outputfile=${2#*=}
+
+if [[ ! -z $filename ]] && [[ ! -z $outputfile ]];then
+joined=($(./pytest.py $filename $outputfile))
+else 
+echo "Please enter the file name"
+usage
+exit 1
+fi
+
+
+
